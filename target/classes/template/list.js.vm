@@ -1,0 +1,160 @@
+var vm = new Vue({
+    i18n,
+	el:'#rrapp',
+	data:{
+		q:{
+			keyname: null
+		},		
+		showList: true,
+		title: null,
+		lable: {},
+		${classname}: {}
+	},
+	methods: {
+		query: function () {
+			vm.reload();
+		},
+		add: function(){
+			vm.showList = false;
+			vm.title = vm.$t("add");
+			vm.${classname} = {};
+		},
+		update: function (event) {
+			var $pk.attrname = getSelectedRow();
+			if($pk.attrname == null){
+				return ;
+			}
+			vm.showList = false;
+            vm.title = vm.$t("edit");
+            
+            vm.getInfo(${pk.attrname})
+		},
+		saveOrUpdate: function (event) {
+			if(!$("#contentForm").valid()){
+		    	 return;
+			}			
+			var url = vm.${classname}.${pk.attrname} == null ? "../${pathName}/save" : "../${pathName}/update";
+			$.ajax({
+				type: "POST",
+			    url: url,
+			    contentType: "application/json",
+			    data: JSON.stringify(vm.${classname}),
+			    success: function(r){
+			    	if(r.code === 0){
+						alert(vm.$t("success"), function(index){
+							vm.reload();
+						});
+					}else{
+						alert(r.msg);
+					}
+				}
+			});
+		},
+		del: function (event) {
+			var ${pk.attrname}s = getSelectedRows();
+			if(${pk.attrname}s == null){
+				return ;
+			}
+			
+			confirm(vm.$t("deleteConfirm"), function(){
+				$.ajax({
+					type: "POST",
+				    url: "../${pathName}/delete",
+				    contentType: "application/json",
+				    data: JSON.stringify(${pk.attrname}s),
+				    success: function(r){
+						if(r.code == 0){
+							alert(vm.$t("success"), function(index){
+								$("#jqGrid").trigger("reloadGrid");
+							});
+						}else{
+							alert(r.msg);
+						}
+					}
+				});
+			});
+		},
+		getInfo: function(${pk.attrname}){
+			$.get("../${pathName}/info/"+${pk.attrname}, function(r){
+                vm.${classname} = r.${classname};
+            });
+		},
+		reload: function (event) {
+			vm.showList = true;
+			var page = $("#jqGrid").jqGrid('getGridParam','page');
+			$("#jqGrid").jqGrid('setGridParam',{ 
+			    postData:{'keyname': vm.q.keyname},
+                page:page
+            }).trigger("reloadGrid");
+		}
+	}
+});
+
+ 
+ vm.$data.lable['ok']=vm.$t('ok');
+ vm.$data.lable['back']=vm.$t('back');
+ 
+ $(".holderClz").each(function(){
+	  var ctrlId=$(this).attr("id")+"Holder";
+	  if (vm.$t(ctrlId)!=null){
+		  $(this).attr('placeholder',vm.$t(ctrlId))
+	  }
+ })
+ 
+
+$(function () {
+	 var locale=vm.$i18n.locale;
+	 var gridScriptUrl='../public/plugins/jqgrid/grid.locale-'+locale+'.js';
+	 if (locale=='cn'){
+	 	 var validScriptUrl='../public/plugins/jquery-validate-1.13.0/jquery.validate.'+locale+'.js';
+		 $.getScript(validScriptUrl).done(function(script, textStatus) {
+		 })
+		 .fail(function(jqxhr, settings, exception) {
+		   $( "div.log" ).text( "Triggered ajaxError handler." );
+		 });
+	 }
+	 $.getScript(gridScriptUrl).done(function(script, textStatus) {
+	 
+	    $("#jqGrid").jqGrid({
+	        url: '../${pathName}/list',
+	        datatype: "json",
+	        colModel: [			
+	#foreach($column in $columns)
+	#if($column.columnName == $pk.columnName)
+				{ label: '${column.attrname}', name: '${column.attrname}', index: '${column.columnName}', width: 50, key: true },
+	#else
+				{ label: '${column.comments}', name: '${column.attrname}', index: '${column.columnName}', width: 80 }#if($velocityCount != $columns.size()), #end
+				
+	#end			
+	#end
+	        ],
+			viewrecords: true,
+	        height: $(window).height() - 150,  
+	        rowNum: 10,
+			rowList : [10,20,30,50],
+	        rownumbers: true, 
+	        rownumWidth: 25, 
+	        autowidth:true,
+	        multiselect: true,
+	        pager: "#jqGridPager",
+	        jsonReader : {
+	            root: "page.list",
+	            page: "page.currPage",
+	            total: "page.totalPage",
+	            records: "page.totalCount"
+	        },
+	        prmNames : {
+	            page:"page", 
+	            rows:"limit", 
+	            order: "order"
+	        },
+	        gridComplete:function(){
+	        	//隐藏grid底部滚动条
+	        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+	        }
+	    });
+	 	 })
+	 .fail(function(jqxhr, settings, exception) {
+	   $( "div.log" ).text( "Triggered ajaxError handler." );
+	 });   
+});

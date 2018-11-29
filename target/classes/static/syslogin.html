@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>CRM</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="public/css/bootstrap.min.css">
+  <link rel="stylesheet" href="public/css/font-awesome.min.css">
+  <link rel="stylesheet" href="public/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="public/css/all-skins.min.css">
+  <link rel="stylesheet" href="public/css/main.css">
+  
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+	<style>
+		.activeLang {
+ 
+			color:#337ab7;
+		}
+ 		
+	</style>  
+</head>
+
+<body class="hold-transition login-page">
+<div class="login-box" id="rrapp" v-cloak>
+  <div class="login-logo">
+    <b>{{$t("title")}}</b>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+      <p class="login-box-msg">{{ $t("welcome") }}
+	  </p>
+      <div v-if="error" class="alert alert-danger alert-dismissible">
+        <h4 style="margin-bottom: 0px;"><i class="fa fa-exclamation-triangle"></i> {{errorMsg}}</h4>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control holderClz" id="account" v-model="username" placeholder="账号"  >
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" class="form-control holderClz" id="password" v-model="password" placeholder="密码"  >
+        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control holderClz" id="captcha" v-model="captcha" @keyup.enter="login" placeholder="">
+        <span class="glyphicon glyphicon-warning-sign form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <img alt="如果看不清楚，请单击图片刷新！" class="pointer" :src="src"  @click="refreshCode">
+        &nbsp;&nbsp;&nbsp;&nbsp;<a href="javascript:;" @click="refreshCode">{{$t("refresh")}}</a>
+ 
+      </div>
+      
+		            
+      <div class="row">
+        <div class="col-xs-8">
+               			   <p class="text-muted text-left">
+				                	{{$t("languageSelect")}}：
+				                <span >
+				                	<small  v-bind:class="[isCn ? 'activeLang' : '']"  @click="changeLanguage('cn')">中文</font></small>
+				                </span>
+				                |
+				                <span >
+				  
+				                     <small  v-bind:class="[isCn ?  '': 'activeLang']"  @click="changeLanguage('en')">English</font></small>
+				                </span>
+				            </p>
+        </div>
+        <div class="col-xs-4">
+          <button type="button" class="btn btn-primary btn-block btn-flat" @click="login">{{$t("login")}}</button>
+ 
+        </div>
+ 	 </div>
+ 
+  </div>
+</div>
+              <!-- 使用 router-link 组件来导航. -->
+    <!-- 通过传入 `to` 属性指定链接. -->
+    <!-- <router-link> 默认会被渲染成一个 `<a>` 标签 -->
+    <!--
+    <router-link to="/foo">Go to Foo</router-link>
+    <router-link to="/bar">Go to Bar</router-link>
+	 -->
+    
+    
+ 
+
+<!-- /.login-box -->
+<script src="public/libs/jquery.min.js"></script>
+<script src="public/libs/vue.js"></script>
+<script src="public/libs/vue-router.js"></script>
+<script src="public/libs/vue-i18n.js"></script>  
+<script src="public/libs/bootstrap.min.js"></script>
+<script src="public/libs/jquery.slimscroll.min.js"></script>
+ 
+<script src="public/libs/fastclick.min.js"></script>
+ 
+<script src="public/libs/app.js"></script>
+<script src="public/js/common.js"></script>
+
+<script src="public/js/syslogin-i18n.js?v=1"></script>  
+ <script src="public/js/syslogin.js?v=1"></script> 
+</body>
+</html>

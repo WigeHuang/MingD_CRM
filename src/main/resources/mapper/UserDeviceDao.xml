@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mindao.dao.UserDeviceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.mindao.entity.UserDeviceEntity" id="userDeviceMap">
+        <result property="pid" column="d.pid"/>
+        <result property="userId" column="d.user_id"/>
+        <result property="deviceName" column="d.device_name"/>
+        <result property="modelCode" column="d.model_code"/>
+        <result property="deviceId" column="d.device_id"/>
+        <result property="qrCode" column="d.qr_code"/>
+        <result property="bindTime" column="d.bind_time"/>
+        
+        <result property="city" column="d.city"/>
+        <result property="region" column="d.region"/>
+        <result property="timezone" column="d.timezone"/>
+        <result property="dst" column="d.dst"/>
+        
+        <result property="nickname" column="u.nick_name"/>
+        <result property="mobile" column="u.mobile"/>
+        <result property="email" column="u.email"/>
+    </resultMap>
+
+    <select id="queryByBindTime" resultType="long">
+		select count(1) as cnt from u_user_device  where 1=1 
+			<if test="timeStart != null and timeStart != ''">
+				and DATE_FORMAT( bind_time, '%Y-%m-%d') >=  DATE_FORMAT(#{timeStart}, '%Y-%m-%d')
+			</if>
+			<if test="timeEnd != null and timeEnd != ''">
+				and DATE_FORMAT( bind_time, '%Y-%m-%d') &lt; DATE_FORMAT(#{timeEnd}, '%Y-%m-%d')
+			</if>		
+	</select>
+	
+	
+	<select id="queryObject" resultType="com.mindao.entity.UserDeviceEntity">
+		select d.* from u_user_device d where d.pid = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.mindao.entity.UserDeviceEntity">
+		select d.*,u.email,u.mobile,u.nick_name from u_user_device d  left join u_user u on d.user_id=u.uid
+		<where>
+			<if test="keyname != null and keyname.trim() != ''">
+				and (d.`device_name` like concat('%',#{keyname},'%') or d.`device_id` like concat('%',#{keyname},'%')  or u.`nick_name` like concat('%',#{keyname},'%') or u.`email` like concat('%',#{keyname},'%')  or u.`mobile` like concat('%',#{keyname},'%')  ) 
+			</if>
+		</where>		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by d.pid desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="queryByUserId" resultType="com.mindao.entity.UserDeviceEntity">
+		select d.*  from u_user_device d  where d.user_id = #{userId}
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from u_user_device 
+	</select>
+	 
+	<insert id="save" parameterType="com.mindao.entity.UserDeviceEntity">
+		insert into u_user_device
+		(
+			`pid`, 
+			`user_id`, 
+			`device_name`, 
+			`model_code`, 
+			`device_id`, 
+			`qr_code`, 
+			`bind_time`
+		)
+		values
+		(
+			#{pid}, 
+			#{userId}, 
+			#{deviceName}, 
+			#{modelCode}, 
+			#{deviceId}, 
+			#{qrCode}, 
+			#{bindTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.mindao.entity.UserDeviceEntity">
+		update u_user_device 
+		<set>
+			<if test="userId != null">`user_id` = #{userId}, </if>
+			<if test="deviceName != null">`device_name` = #{deviceName}, </if>
+			<if test="modelCode != null">`model_code` = #{modelCode}, </if>
+			<if test="deviceId != null">`device_id` = #{deviceId}, </if>
+			<if test="qrCode != null">`qr_code` = #{qrCode}, </if>
+			<if test="bindTime != null">`bind_time` = #{bindTime}</if>
+		</set>
+		where pid = #{pid}
+	</update>
+	
+	<delete id="delete">
+		delete from u_user_device where pid = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from u_user_device where pid in 
+		<foreach item="pid" collection="array" open="(" separator="," close=")">
+			#{pid}
+		</foreach>
+	</delete>
+
+</mapper>

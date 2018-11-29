@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mindao.dao.UserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.mindao.entity.UserEntity" id="userMap">
+        <result property="uid" column="uid"/>
+        <result property="email" column="email"/>
+        <result property="mobile" column="mobile"/>
+        <result property="password" column="password"/>
+        <result property="emailFlag" column="email_flag"/>
+        <result property="mobileFlag" column="mobile_flag"/>
+        <result property="avatar" column="avatar"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="isLocked" column="is_locked"/>
+        <result property="retryTimes" column="retry_times"/>
+        <result property="registerTime" column="register_time"/>
+        <result property="registerRegion" column="register_region"/>
+        <result property="lastModifyTime" column="last_modify_time"/>
+        <result property="lid" column="lid"/>
+        <result property="registerFrom" column="register_from"/>
+        <result property="activeCode" column="active_code"/>
+        <result property="lastActiveTime" column="last_active_time"/>
+        <result property="status" column="status"/>
+        <result property="accType" column="acc_type"/>
+        <result property="timezone" column="timezone"/>
+        <result property="mobileType" column="mobile_type"/>
+        <result property="msgPlatformType" column="msg_platform_type"/>
+        <result property="msgRegId" column="msg_reg_id"/>
+        <result property="msgRegTime" column="msg_reg_time"/>
+        <result property="mobileDeviceId" column="mobile_device_id"/>
+        <result property="loginTime" column="login_time"/>
+        <result property="loginState" column="login_state"/>
+    </resultMap>
+    
+ 
+
+    <select id="queryByRegTime" resultType="long">
+		select count(1) as cnt from u_user where status=1
+			<if test="timeStart != null and timeStart != ''">
+				and DATE_FORMAT( register_time, '%Y-%m-%d') >=  DATE_FORMAT(#{timeStart}, '%Y-%m-%d')
+			</if>
+			<if test="timeEnd != null and timeEnd != ''">
+				and DATE_FORMAT( register_time, '%Y-%m-%d') &lt; DATE_FORMAT(#{timeEnd}, '%Y-%m-%d')
+			</if>		
+	</select>
+	
+	
+	<select id="queryObject" resultType="com.mindao.entity.UserEntity">
+		select * from u_user where uid = #{value}
+	</select>
+	
+	<select id="queryByAccount" resultType="com.mindao.entity.UserEntity">
+		select * from u_user where (email = #{value} or mobile = #{value}) and status=1
+	</select>
+
+	<select id="queryList" resultType="com.mindao.entity.UserEntity">
+		select * from u_user
+		<where>
+			<if test="keyname != null and keyname.trim() != ''">
+				and (`nick_name` like concat('%',#{keyname},'%') or `email` like concat('%',#{keyname},'%')  or `mobile` like concat('%',#{keyname},'%') ) 
+			</if>
+		</where>	
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by uid desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from u_user 
+	</select>
+	 
+	<insert id="save" parameterType="com.mindao.entity.UserEntity">
+		insert into u_user
+		(
+			`uid`, 
+			`email`, 
+			`mobile`, 
+			`password`, 
+			`email_flag`, 
+			`mobile_flag`, 
+			`avatar`, 
+			`nick_name`, 
+			`is_locked`, 
+			`retry_times`, 
+			`register_time`, 
+			`register_region`, 
+			`last_modify_time`, 
+			`lid`, 
+			`register_from`, 
+			`active_code`, 
+			`last_active_time`, 
+			`status`, 
+			`acc_type`, 
+			`timezone`, 
+			`mobile_type`, 
+			`msg_platform_type`, 
+			`msg_reg_id`, 
+			`msg_reg_time`, 
+			`mobile_device_id`, 
+			`login_time`, 
+			`login_state`
+		)
+		values
+		(
+			#{uid}, 
+			#{email}, 
+			#{mobile}, 
+			#{password}, 
+			#{emailFlag}, 
+			#{mobileFlag}, 
+			#{avatar}, 
+			#{nickName}, 
+			#{isLocked}, 
+			#{retryTimes}, 
+			#{registerTime}, 
+			#{registerRegion}, 
+			#{lastModifyTime}, 
+			#{lid}, 
+			#{registerFrom}, 
+			#{activeCode}, 
+			#{lastActiveTime}, 
+			#{status}, 
+			#{accType}, 
+			#{timezone}, 
+			#{mobileType}, 
+			#{msgPlatformType}, 
+			#{msgRegId}, 
+			#{msgRegTime}, 
+			#{mobileDeviceId}, 
+			#{loginTime}, 
+			#{loginState}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.mindao.entity.UserEntity">
+		update u_user 
+		<set>
+			<if test="email != null">`email` = #{email}, </if>
+			<if test="mobile != null">`mobile` = #{mobile}, </if>
+			<if test="password != null">`password` = #{password}, </if>
+			<if test="emailFlag != null">`email_flag` = #{emailFlag}, </if>
+			<if test="mobileFlag != null">`mobile_flag` = #{mobileFlag}, </if>
+			<if test="avatar != null">`avatar` = #{avatar}, </if>
+			<if test="nickName != null">`nick_name` = #{nickName}, </if>
+			<if test="isLocked != null">`is_locked` = #{isLocked}, </if>
+			<if test="retryTimes != null">`retry_times` = #{retryTimes}, </if>
+			<if test="registerTime != null">`register_time` = #{registerTime}, </if>
+			<if test="registerRegion != null">`register_region` = #{registerRegion}, </if>
+			<if test="lastModifyTime != null">`last_modify_time` = #{lastModifyTime}, </if>
+			<if test="lid != null">`lid` = #{lid}, </if>
+			<if test="registerFrom != null">`register_from` = #{registerFrom}, </if>
+			<if test="activeCode != null">`active_code` = #{activeCode}, </if>
+			<if test="lastActiveTime != null">`last_active_time` = #{lastActiveTime}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="accType != null">`acc_type` = #{accType}, </if>
+			<if test="timezone != null">`timezone` = #{timezone}, </if>
+			<if test="mobileType != null">`mobile_type` = #{mobileType}, </if>
+			<if test="msgPlatformType != null">`msg_platform_type` = #{msgPlatformType}, </if>
+			<if test="msgRegId != null">`msg_reg_id` = #{msgRegId}, </if>
+			<if test="msgRegTime != null">`msg_reg_time` = #{msgRegTime}, </if>
+			<if test="mobileDeviceId != null">`mobile_device_id` = #{mobileDeviceId}, </if>
+			<if test="loginTime != null">`login_time` = #{loginTime}, </if>
+			<if test="loginState != null">`login_state` = #{loginState}</if>
+		</set>
+		where uid = #{uid}
+	</update>
+	
+	<delete id="delete">
+		delete from u_user where uid = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from u_user where uid in 
+		<foreach item="uid" collection="array" open="(" separator="," close=")">
+			#{uid}
+		</foreach>
+	</delete>
+
+</mapper>

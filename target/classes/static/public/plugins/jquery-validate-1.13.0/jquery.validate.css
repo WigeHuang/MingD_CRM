@@ -1,0 +1,19 @@
+* {font-family:inherit,Arial,verdana,tahoma;margin:0px;padding:0px;font-size:12px;}
+a { text-decoration: none; cursor:hand} 
+
+/************jQuery.Validate插件样式开始********************/
+label.error
+{
+    background: url(common/jquery-validate-1.13.0/images/error.png) no-repeat 0px 0px;
+    color: Red;
+    padding-left: 20px;
+}
+label.success
+{			
+   background:url("common/jquery-validate-1.13.0/images/checked.gif") no-repeat 0px 0px; 
+}
+input.error
+{
+    border: dashed 1px red;
+}
+/************jQuery.Validate插件样式结束********************

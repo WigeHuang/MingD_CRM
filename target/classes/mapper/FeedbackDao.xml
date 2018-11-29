@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mindao.dao.FeedbackDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.mindao.entity.FeedbackEntity" id="feedbackMap">
+        <result property="pid" column="t.pid"/>
+        <result property="uid" column="t.uid"/>
+        <result property="feedback" column="t.feedback"/>
+        <result property="submitDate" column="t.submit_date"/>
+        <result property="handler" column="t.handler"/>
+        <result property="handleResult" column="t.handle_result"/>
+        <result property="handleDate" column="t.handle_date"/>
+        
+        <result property="state" column="t.state"/>
+        <result property="contact" column="t.contact"/>
+        <result property="uploadLog" column="t.upload_log"/>
+        <result property="log" column="t.log"/>
+        <result property="logFile" column="t.log_file"/>
+
+        <result property="nickname" column="u.nick_name"/>
+        <result property="mobile" column="u.mobile"/>
+        <result property="email" column="u.email"/> 
+        <result property="handlerName" column="su.name"/>         
+    </resultMap>
+    
+   <select id="queryBySubmitTime" resultType="long">
+		select count(1) as cnt from u_feedback where  1=1 
+			<if test="timeStart != null and timeStart != ''">
+				and DATE_FORMAT( submit_date, '%Y-%m-%d') >=  DATE_FORMAT(#{timeStart}, '%Y-%m-%d')
+			</if>
+			<if test="timeEnd != null and timeEnd != ''">
+				and DATE_FORMAT( submit_date, '%Y-%m-%d') &lt; DATE_FORMAT(#{timeEnd}, '%Y-%m-%d')
+			</if>		
+	</select>
+
+	<select id="queryObject" resultType="com.mindao.entity.FeedbackEntity">
+				select t.*,u.email,u.mobile,u.nick_name,su.username as handlerName
+		     from u_feedback t
+			 left join u_user u on t.uid=u.uid
+			 left join sys_user su on t.handler=su.user_id
+			 where t.pid = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.mindao.entity.FeedbackEntity">
+		select t.*,u.email,u.mobile,u.nick_name,su.username as handlerName
+		     from u_feedback t
+			 left join u_user u on t.uid=u.uid
+			 left join sys_user su on t.handler=su.user_id
+		<where>
+			<if test="keyname != null and keyname.trim() != ''">
+				and (t.`feedback` like concat('%',#{keyname},'%') or t.`handle_result` like concat('%',#{keyname},'%')  or u.`nick_name` like concat('%',#{keyname},'%') or u.`email` like concat('%',#{keyname},'%')  or u.`mobile` like concat('%',#{keyname},'%')  ) 
+			</if>
+			<if test="uid != null and uid.trim() != ''">
+				and t.uid = #{uid} 
+			</if>			
+		</where>
+					 
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by pid desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from u_feedback 
+	</select>
+	 
+	<insert id="save" parameterType="com.mindao.entity.FeedbackEntity">
+		insert into u_feedback
+		(
+			`pid`, 
+			`uid`, 
+			`feedback`, 
+			`submit_date`, 
+			`contact`,
+			`upload_log`,
+			`log`,
+			`log_file`,
+			`state`,
+			`handler`, 
+			`handle_result`, 
+			`handle_date`
+		)
+		values
+		(
+			#{pid}, 
+			#{uid}, 
+			#{feedback}, 
+			#{submitDate}, 
+			#{contact}, 
+			#{uploadLog}, 
+			#{log}, 
+			#{logFile},
+			#{state}, 
+			#{handler}, 
+			#{handleResult}, 
+			#{handleDate}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.mindao.entity.FeedbackEntity">
+		update u_feedback 
+		<set>
+			<if test="uid != null">`uid` = #{uid}, </if>
+			<if test="feedback != null">`feedback` = #{feedback}, </if>
+			<if test="submitDate != null">`submit_date` = #{submitDate}, </if>
+			<if test="handler != null">`handler` = #{handler}, </if>
+			<if test="handleResult != null">`handle_result` = #{handleResult}, </if>
+			<if test="handleDate != null">`handle_date` = #{handleDate}, </if>
+			<if test="state != null">`state` = #{state}, </if>
+			<if test="contact != null">`contact` = #{contact}, </if>
+			<if test="uploadLog != null">`upload_log` = #{uploadLog}, </if>
+			<if test="log != null">`log` = #{log}, </if>
+			<if test="logFile != null">`log_file` = #{logFile}, </if>
+		</set>
+		where pid = #{pid}
+	</update>
+	
+	<delete id="delete">
+		delete from u_feedback where pid = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from u_feedback where pid in 
+		<foreach item="pid" collection="array" open="(" separator="," close=")">
+			#{pid}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mindao.dao.TDeskcontactTxlDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.mindao.entity.TDeskcontactTxlEntity" id="tDeskcontactTxlMap">
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="tel" column="TEL"/>
+        <result property="contactname" column="CONTACTNAME"/>
+        <result property="ccode" column="CCODE"/>
+        <result property="email" column="EMAIL"/>
+        <result property="bz" column="BZ"/>
+        <result property="floorname" column="FLOORNAME"/>
+        <result property="deptname" column="DEPTNAME"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="com.mindao.entity.TDeskcontactTxlEntity">
+		select * from t_deskcontact_txl where ID = #{value}
+	</select>
+
+	<select id="queryList" resultType="com.mindao.entity.TDeskcontactTxlEntity">
+		select * from t_deskcontact_txl
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by ID desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from t_deskcontact_txl 
+	</select>
+	 
+	<insert id="save" parameterType="com.mindao.entity.TDeskcontactTxlEntity">
+		insert into t_deskcontact_txl
+		(
+			`ID`, 
+			`NAME`, 
+			`ADDRESS`, 
+			`TEL`, 
+			`CONTACTNAME`, 
+			`CCODE`, 
+			`EMAIL`, 
+			`BZ`, 
+			`FLOORNAME`, 
+			`DEPTNAME`
+		)
+		values
+		(
+			#{id}, 
+			#{name}, 
+			#{address}, 
+			#{tel}, 
+			#{contactname}, 
+			#{ccode}, 
+			#{email}, 
+			#{bz}, 
+			#{floorname}, 
+			#{deptname}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.mindao.entity.TDeskcontactTxlEntity">
+		update t_deskcontact_txl 
+		<set>
+			<if test="name != null">`NAME` = #{name}, </if>
+			<if test="address != null">`ADDRESS` = #{address}, </if>
+			<if test="tel != null">`TEL` = #{tel}, </if>
+			<if test="contactname != null">`CONTACTNAME` = #{contactname}, </if>
+			<if test="ccode != null">`CCODE` = #{ccode}, </if>
+			<if test="email != null">`EMAIL` = #{email}, </if>
+			<if test="bz != null">`BZ` = #{bz}, </if>
+			<if test="floorname != null">`FLOORNAME` = #{floorname}, </if>
+			<if test="deptname != null">`DEPTNAME` = #{deptname}</if>
+		</set>
+		where ID = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from t_deskcontact_txl where ID = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from t_deskcontact_txl where ID in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

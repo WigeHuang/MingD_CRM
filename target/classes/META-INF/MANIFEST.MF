@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: mindao-crm
+Implementation-Version: 2.1.0
+Built-By: huang
+Implementation-Vendor-Id: com.mindao
+Build-Jdk: 1.8.0_45
+Implementation-URL: http://projects.spring.io/spring-boot/mindao-crm/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

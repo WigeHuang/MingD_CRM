@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mindao.dao.AttachmentDao">
+ 
+	<sql id="attachmentAttributes">
+		pid,
+		name,
+		lastModifyTime,
+		status
+	</sql>
+
+
+
+	<resultMap id="attachmentMap" type="com.mindao.entity.AttachmentEntity">
+		<id property="pid" column="pid"/>
+		<result property="fileName" column="file_name" />
+		<result property="filePath" column="file_path" />
+		<result property="fileSize" column="file_size"/>
+		<result property="uploadDate" column="upload_date"/>
+		<result property="uploader" column="uploader"/>
+		<result property="checksum" column="checksum"/>
+			
+	</resultMap>
+	
+	<select id="queryListByPage" parameterType="map" resultMap="attachmentMap" flushCache="true" useCache="true">
+		<!-- 
+			偏移offset较小的时候，直接使用limit较优；
+			偏移offset较大的时候，使用下面子查询的方式较优；
+			具体可以根据业务情况选择 
+		-->
+		<!-- 
+		select <include refid="attachmentAttributes" /> from u_attachment Where u_id >=(
+		select u_id from u_attachment order by u_id limit ${start},1
+		) limit ${pageNumber}
+		 -->
+		SELECT u.pid,
+		u.name,
+		u.last_modify_time,
+		u.status
+		FROM u_attachment u
+		<where>
+			 u.status = 1 
+			<if test="attachmentName != null and attachmentName != ''">
+				and (u.name  like CONCAT('%','${attachmentName}','%' )    )
+			</if>
+			
+		</where>
+	</select>
+	
+	<select id="queryListAll" parameterType="map" resultMap="attachmentMap" flushCache="true" useCache="true">
+		SELECT u.pid,
+		u.name,
+		u.last_modify_time,
+		u.status
+		FROM u_attachment u
+		<where>
+			 u.status = 1 
+		</where>
+	</select>
+	
+ 
+	
+	<select id="queryObject" parameterType="String" resultMap="attachmentMap" flushCache="true" useCache="true">
+		SELECT u.pid,
+ 			u.file_name,
+ 			u.file_path,
+ 			u.file_size,
+ 			u.upload_date,
+ 			u.uploader,
+ 			u.checksum
+ 		FROM u_attachment u
+		where u.pid =  #{value}
+	</select>
+	
+	
+	 <select id="findByIds" parameterType="map" resultMap="attachmentMap" flushCache="true" useCache="true">
+		SELECT u.pid,
+ 			u.file_name,
+ 			u.file_path,
+ 			u.file_size,
+ 			u.upload_date,
+ 			u.uploader,
+ 			u.checksum
+ 		FROM u_attachment u
+		where
+		  u.pid in
+        <foreach collection="attIdsArray" item="attId"
+            index="index" open="(" close=")" separator=",">
+            #{attId}
+        </foreach>
+        order by u.upload_date
+	</select>
+	
+	
+
+	
+	<insert id="insert" parameterType="com.mindao.entity.AttachmentEntity" useGeneratedKeys="true" keyProperty="id">
+		insert ignore into u_attachment (
+			pid,
+ 			file_name,
+ 			file_path,
+ 			file_size,
+ 			upload_date,
+ 			uploader,
+ 			checksum
+			)   
+		values (
+			#{pid},
+			#{fileName},
+			#{filePath},
+			#{fileSize},
+			#{uploadDate},
+			#{uploader},
+			#{checksum}
+			)  
+	</insert>
+	
+ 
+	
+	<update id="update" parameterType="com.mindao.entity.AttachmentEntity" flushCache="true">
+		update u_attachment
+		<set>
+		    last_modify_time=now(),
+			<if test="name != null and name != ''">
+				name = #{name},
+			</if>
+ 
+		</set>
+		where pid = #{pid}
+	</update>
+	
+
+	
+	<delete id="deleteLogicly" parameterType="list">
+		<![CDATA[  
+       update   u_attachment set status=-1 where pid in  
+    	]]>  
+	    <foreach collection="list" item = "id" open="(" separator="," close=")">
+	    #{id}  
+	    </foreach>  
+	</delete>
+	
+</mapper>
