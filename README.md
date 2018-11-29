@@ -1,9 +1,6 @@
 **项目说明** 
 - mindao-crm是用Spring Boot实现的J2EE快速开发平台
 - 使用mindao-crm搭建项目，只需编写30%左右代码，其余的代码交给系统自动生成
-- 一个月的工作量，一周就能完成，剩余的时间可以陪家人、朋友、撩妹、钓凯子等，从此踏入高富帅、白富美行业
-- 也是接私活的利器，能快速完成项目并交付，轻松赚取外快，实现财务自由，走向人生巅峰（接私活赚了钱，可以给作者打赏点辛苦费，让作者更有动力持续优化、完善）
- 
 
 
 **具有如下特点** 
@@ -38,24 +35,6 @@
 - Tomcat7.0+
 - Maven3.0+
 
-
-
- **后台本地部署**
-- 通过git下载源码
-- 创建数据库mindao-crm，数据库编码为UTF-8
-- 执行doc/mindao-crm.sql文件，初始化数据
-- 修改application.properties文件，更新MySQL账号和密码
-- Eclipse、IDEA运行MindaoCrmApplication.java，则可启动项目
-- 项目访问路径：http://localhost:8000/crm
-- API文档路径：http://localhost:8000/crm/swagger-ui.html
-- 账号密码：admin/admin
-
- **前台NGINX部署**
- - 解压doc/nginx-1.11.10.zip,放到一个常用目录下
- - 修改nginx解压后的nginx.conf,设置root指向自己项目的的mindao-crm\src\main\resources\site实际物理路径
- - 运行nginx.exe
- - 项目访问路径：http://localhost:1000/syslogin.html
- - 账号密码：153277817@qq.com/123456
 
 
  
